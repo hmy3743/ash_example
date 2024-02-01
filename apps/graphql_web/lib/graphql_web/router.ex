@@ -40,7 +40,7 @@ defmodule GraphqlWeb.Router do
   def actor_from_session(conn, _opts) do
     with conn <- fetch_cookies(conn),
          token when is_binary(token) <- conn.cookies["auth_token"],
-         {:ok, token} <-
+         {:ok, %Core.Account.Token{} = token} <-
            Core.Account.Token
            |> Ash.Query.for_read(:get_token, %{token: token})
            |> Core.Account.read_one(),

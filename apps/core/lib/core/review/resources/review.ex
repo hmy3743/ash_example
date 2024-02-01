@@ -1,7 +1,8 @@
 defmodule Core.Review.Review do
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
-    extensions: [AshGraphql.Resource]
+    extensions: [AshGraphql.Resource],
+    authorizers: [Ash.Policy.Authorizer]
 
   attributes do
     uuid_primary_key :id
@@ -52,6 +53,11 @@ defmodule Core.Review.Review do
     end
   end
 
+  code_interface do
+    define_for Core.Review
+    define :read, action: :read
+  end
+
   postgres do
     table "review"
     repo Core.Repo
@@ -66,6 +72,13 @@ defmodule Core.Review.Review do
 
     mutations do
       create :create_review, :create
+    end
+  end
+
+  policies do
+    policy always() do
+      forbid_unless actor_present()
+      authorize_if always()
     end
   end
 end

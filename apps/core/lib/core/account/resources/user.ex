@@ -1,7 +1,8 @@
 defmodule Core.Account.User do
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
-    extensions: [AshAuthentication, AshGraphql.Resource]
+    extensions: [AshAuthentication, AshGraphql.Resource],
+    authorizers: [Ash.Policy.Authorizer]
 
   attributes do
     uuid_primary_key :id
@@ -50,7 +51,7 @@ defmodule Core.Account.User do
     end
 
     read :viewer do
-      manual fn query, _, context ->
+      manual fn _query, _, context ->
         {:ok, [context.actor]}
       end
     end
@@ -67,6 +68,7 @@ defmodule Core.Account.User do
 
   code_interface do
     define_for Core.Account
+    define :read, action: :read
     define :sign_up, action: :sign_up
     define :get_by_email, action: :get_by_email, args: [:email]
   end
@@ -82,6 +84,21 @@ defmodule Core.Account.User do
 
     mutations do
       create :sign_up, :sign_up
+    end
+  end
+
+  policies do
+    bypass action(:sign_up) do
+      authorize_if always()
+    end
+
+    bypass action(:sign_in) do
+      authorize_if always()
+    end
+
+    policy always() do
+      forbid_unless actor_present()
+      authorize_if always()
     end
   end
 end

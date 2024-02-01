@@ -14,6 +14,7 @@ defmodule Core.Review.ReviewTag do
   postgres do
     table "review_tag"
     repo Core.Repo
+
     references do
       reference :review, deferrable: :initially
       reference :tag, deferrable: :initially

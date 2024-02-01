@@ -5,8 +5,4 @@ defmodule Core.Account do
   resources do
     registry Core.Account.Registry
   end
-
-  graphql do
-    authorize? false
-  end
 end
