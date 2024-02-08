@@ -1,0 +1,16 @@
+app = "noelhan"
+primary_region = "nrt"
+
+[build.args]
+  RELEASE="graphql"
+
+[deploy]
+  release_command = "./bin/graphql eval Core.Release.reset"
+
+[http_service]
+  internal_port = 4000
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ["app"]
